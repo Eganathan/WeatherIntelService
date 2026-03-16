@@ -46,7 +46,8 @@ object FungalRiskAnalyzer {
             category = "FUNGAL_RISK",
             severity = severity,
             windowStart = if (severity == Severity.HIGH) bestRunStart?.dt else null,
-            windowEnd = if (severity == Severity.HIGH) bestRunEnd?.dt else null
+            windowEnd = if (severity == Severity.HIGH) bestRunEnd?.dt else null,
+            iconCode = bestRunStart?.weather?.firstOrNull()?.icon
         )
     }
 }

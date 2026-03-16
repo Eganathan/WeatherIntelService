@@ -49,7 +49,8 @@ object HeatStressAnalyzer {
             severity = severity,
             formatArgs = listOf(peakTemp.toInt()),
             windowStart = if (severity == Severity.HIGH) bestRunStart?.dt else null,
-            windowEnd = if (severity == Severity.HIGH) bestRunEnd?.dt else null
+            windowEnd = if (severity == Severity.HIGH) bestRunEnd?.dt else null,
+            iconCode = bestRunStart?.weather?.firstOrNull()?.icon
         )
     }
 }

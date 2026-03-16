@@ -26,5 +26,10 @@ class OwmClient {
         return http.get(url).body()
     }
 
+    suspend fun fetchCurrentWeather(lat: Double, lon: Double): CurrentWeatherResponse {
+        val url = "https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&units=metric&appid=${AppConfig.owmApiKey}"
+        return http.get(url).body()
+    }
+
     fun close() = http.close()
 }

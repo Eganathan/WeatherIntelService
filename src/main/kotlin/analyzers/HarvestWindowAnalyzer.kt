@@ -57,7 +57,8 @@ object HarvestWindowAnalyzer {
             severity = severity,
             formatArgs = listOf((bestPopInWindow * 100).toInt()),
             windowStart = bestRunStart?.dt,
-            windowEnd = bestRunEnd?.dt
+            windowEnd = bestRunEnd?.dt,
+            iconCode = bestRunStart?.weather?.firstOrNull()?.icon
         )
     }
 }

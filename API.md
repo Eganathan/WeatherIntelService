@@ -28,7 +28,66 @@ HTTP 401
 
 ## Endpoints
 
-### 1. GET /v1/intelligence
+### 1. GET /v1/current
+
+Returns the current (real-time) weather conditions for a location.
+
+#### Query Parameters
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `lat` | Double | Yes | Latitude (e.g. `13.08`) |
+| `lon` | Double | Yes | Longitude (e.g. `80.27`) |
+
+#### Example Request
+
+```
+GET /v1/current?lat=13.08&lon=80.27
+X-API-Key: your-key-here
+```
+
+#### Response — 200 OK
+
+```json
+{
+  "dt": 1741600000,
+  "location": {
+    "lat": 13.08,
+    "lon": 80.27,
+    "city": "Chennai",
+    "country": "IN"
+  },
+  "condition": "Rain",
+  "description": "moderate rain",
+  "icon_url": "https://openweathermap.org/img/wn/10d@2x.png",
+  "temp": 29.5,
+  "humidity": 72,
+  "wind_speed_kmh": 13.0,
+  "visibility": 6000,
+  "sunrise": 1741564800,
+  "sunset": 1741608000
+}
+```
+
+#### Response Fields
+
+| Field | Type | Description |
+|---|---|---|
+| `dt` | Long | Unix timestamp (seconds) of the observation |
+| `location` | Object | City, country, and coordinates |
+| `condition` | String | OWM condition group (e.g. `Rain`, `Clear`, `Clouds`) |
+| `description` | String | Detailed condition description (e.g. `moderate rain`) |
+| `icon_url` | String | 100×100px OWM icon URL for the current condition |
+| `temp` | Double | Temperature in °C |
+| `humidity` | Int | Relative humidity % |
+| `wind_speed_kmh` | Double | Wind speed in km/h |
+| `visibility` | Int | Visibility in metres |
+| `sunrise` | Long | Unix timestamp of sunrise |
+| `sunset` | Long | Unix timestamp of sunset |
+
+---
+
+### 2. GET /v1/intelligence
 
 Returns agronomic insights for a location by running all 7 weather analyzers against the forecast.
 
@@ -75,7 +134,8 @@ X-API-Key: your-key-here
       "description": "Wind conditions make spraying unsafe. High drift or inversion risk.",
       "format_args": [],
       "window_start": 1741600000,
-      "window_end": 1741600000
+      "window_end": 1741600000,
+      "icon_url": "https://openweathermap.org/img/wn/50d@2x.png"
     },
     {
       "category": "FUNGAL_RISK",
@@ -84,7 +144,8 @@ X-API-Key: your-key-here
       "description": "Elevated humidity levels detected. Monitor crops for fungal conditions.",
       "format_args": [],
       "window_start": null,
-      "window_end": null
+      "window_end": null,
+      "icon_url": "https://openweathermap.org/img/wn/10d@2x.png"
     }
   ]
 }
@@ -107,6 +168,7 @@ X-API-Key: your-key-here
 | `insights[].format_args` | String[] | Raw values used in the description (e.g. wind speed, temperature) |
 | `insights[].window_start` | Long? | Unix timestamp of the start of the relevant forecast window, nullable |
 | `insights[].window_end` | Long? | Unix timestamp of the end of the relevant forecast window, nullable |
+| `insights[].icon_url` | String? | 100×100px OWM icon URL for the weather condition of the relevant slot, nullable |
 
 #### Severity semantics per analyzer
 

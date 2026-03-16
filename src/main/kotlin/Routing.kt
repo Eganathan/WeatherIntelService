@@ -1,10 +1,12 @@
 package dev.eknath
 
 import dev.eknath.api.requireApiKey
+import dev.eknath.api.CurrentWeatherDto
 import dev.eknath.api.ErrorResponse
 import dev.eknath.api.InsightDto
 import dev.eknath.api.IntelligenceResponse
 import dev.eknath.api.LocationInfo
+import dev.eknath.owm.iconUrl
 import dev.eknath.cache.ForecastCache
 import dev.eknath.config.Thresholds
 import dev.eknath.i18n.MessageBundle
@@ -67,7 +69,8 @@ fun Application.configureRouting() {
                         description = description,
                         formatArgs = insight.formatArgs.map { it.toString() },
                         windowStart = insight.windowStart,
-                        windowEnd = insight.windowEnd
+                        windowEnd = insight.windowEnd,
+                        iconUrl = insight.iconCode?.let { iconUrl(it) }
                     )
                 }
 
@@ -103,6 +106,39 @@ fun Application.configureRouting() {
                     forecast = forecast.copy(list = forecast.list.take(count), cnt = minOf(count, forecast.cnt))
                 }
                 call.respond(forecast)
+            }
+
+            get("/current") {
+                if (!call.requireApiKey()) return@get
+
+                val lat = call.request.queryParameters["lat"]?.toDoubleOrNull()
+                    ?: throw IllegalArgumentException("lat is required and must be a number")
+                val lon = call.request.queryParameters["lon"]?.toDoubleOrNull()
+                    ?: throw IllegalArgumentException("lon is required and must be a number")
+
+                val current = owmClient.fetchCurrentWeather(lat, lon)
+                val condition = current.weather.firstOrNull()
+
+                call.respond(
+                    CurrentWeatherDto(
+                        dt = current.dt,
+                        location = LocationInfo(
+                            lat = current.coord.lat,
+                            lon = current.coord.lon,
+                            city = current.name,
+                            country = current.sys.country
+                        ),
+                        condition = condition?.main ?: "",
+                        description = condition?.description ?: "",
+                        iconUrl = condition?.icon?.let { iconUrl(it) } ?: "",
+                        temp = current.main.temp,
+                        humidity = current.main.humidity,
+                        windSpeedKmh = current.wind.speed * 3.6,
+                        visibility = current.visibility,
+                        sunrise = current.sys.sunrise,
+                        sunset = current.sys.sunset
+                    )
+                )
             }
 
             route("/admin") {

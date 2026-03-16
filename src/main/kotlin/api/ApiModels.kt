@@ -29,7 +29,23 @@ data class InsightDto(
     val description: String,
     @SerialName("format_args") val formatArgs: List<String> = emptyList(),
     @SerialName("window_start") val windowStart: Long? = null,
-    @SerialName("window_end") val windowEnd: Long? = null
+    @SerialName("window_end") val windowEnd: Long? = null,
+    @SerialName("icon_url") val iconUrl: String? = null
+)
+
+@Serializable
+data class CurrentWeatherDto(
+    val dt: Long,
+    val location: LocationInfo,
+    val condition: String,
+    val description: String,
+    @SerialName("icon_url") val iconUrl: String,
+    val temp: Double,
+    val humidity: Int,
+    @SerialName("wind_speed_kmh") val windSpeedKmh: Double,
+    val visibility: Int,
+    val sunrise: Long,
+    val sunset: Long
 )
 
 @Serializable

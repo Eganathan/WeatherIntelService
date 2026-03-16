@@ -21,7 +21,8 @@ object FieldWorkabilityAnalyzer {
             severity = severity,
             formatArgs = listOf((pop * 100).toInt()),
             windowStart = worstSlot.dt,
-            windowEnd = worstSlot.dt
+            windowEnd = worstSlot.dt,
+            iconCode = worstSlot.weather.firstOrNull()?.icon
         )
     }
 }

@@ -12,6 +12,25 @@ data class ForecastResponse(
 )
 
 @Serializable
+data class CurrentWeatherResponse(
+    val dt: Long,
+    val name: String,
+    val coord: Coord,
+    val weather: List<WeatherCondition> = emptyList(),
+    val main: Main,
+    val wind: Wind,
+    val sys: CurrentSys = CurrentSys(),
+    val visibility: Int = 0
+)
+
+@Serializable
+data class CurrentSys(
+    val country: String = "",
+    val sunrise: Long = 0,
+    val sunset: Long = 0
+)
+
+@Serializable
 data class City(
     val id: Long = 0,
     val name: String,
@@ -26,13 +45,22 @@ data class Coord(
 )
 
 @Serializable
+data class WeatherCondition(
+    val id: Int = 0,
+    val main: String = "",
+    val description: String = "",
+    val icon: String = ""
+)
+
+@Serializable
 data class ForecastItem(
     val dt: Long,
     @SerialName("dt_txt") val dtTxt: String = "",
     val main: Main,
     val wind: Wind,
     val pop: Double = 0.0,
-    val sys: Sys = Sys()
+    val sys: Sys = Sys(),
+    val weather: List<WeatherCondition> = emptyList()
 )
 
 @Serializable
@@ -50,6 +78,8 @@ data class Wind(
 data class Sys(
     val pod: String = "d"
 )
+
+fun iconUrl(icon: String): String = "https://openweathermap.org/img/wn/$icon@2x.png"
 
 enum class ForecastType(val value: String, val ttlSeconds: Long) {
     FORECAST_5DAY("forecast_5day", 3 * 3600L),

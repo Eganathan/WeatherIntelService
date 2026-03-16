@@ -7,5 +7,5 @@ object AppConfig {
     val apiKey: String = System.getenv("WI_SERVICE_KEY")
         ?: error("WI_SERVICE_KEY environment variable is required")
 
-    val port: Int = System.getenv("PORT")?.toIntOrNull() ?: 8080
+    val port: Int = System.getenv("PORT")?.toIntOrNull() ?: 9000
 }

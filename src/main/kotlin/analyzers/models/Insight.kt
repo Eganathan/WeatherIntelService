@@ -5,5 +5,6 @@ data class Insight(
     val severity: Severity,
     val formatArgs: List<Any> = emptyList(),
     val windowStart: Long? = null,
-    val windowEnd: Long? = null
+    val windowEnd: Long? = null,
+    val iconCode: String? = null
 )

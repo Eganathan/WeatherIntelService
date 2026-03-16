@@ -63,7 +63,8 @@ object SprayingWindowAnalyzer {
             severity = severity,
             formatArgs = listOf(windKmh, temp),
             windowStart = bestRunStart?.dt,
-            windowEnd = bestRunEnd?.dt
+            windowEnd = bestRunEnd?.dt,
+            iconCode = bestSlot?.weather?.firstOrNull()?.icon
         )
     }
 }

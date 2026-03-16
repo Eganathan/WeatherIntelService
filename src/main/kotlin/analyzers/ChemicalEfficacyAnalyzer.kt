@@ -20,7 +20,8 @@ object ChemicalEfficacyAnalyzer {
             category = "CHEMICAL_EFFICACY",
             severity = severity,
             windowStart = hottestSlot.dt,
-            windowEnd = hottestSlot.dt
+            windowEnd = hottestSlot.dt,
+            iconCode = hottestSlot.weather.firstOrNull()?.icon
         )
     }
 }

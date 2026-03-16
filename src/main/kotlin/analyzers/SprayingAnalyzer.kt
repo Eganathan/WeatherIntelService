@@ -29,7 +29,8 @@ object SprayingAnalyzer {
             category = "SPRAYING",
             severity = worstSeverity,
             windowStart = worstSlot?.dt,
-            windowEnd = worstSlot?.dt
+            windowEnd = worstSlot?.dt,
+            iconCode = worstSlot?.weather?.firstOrNull()?.icon
         )
     }
 }
