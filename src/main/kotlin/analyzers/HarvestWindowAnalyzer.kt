@@ -28,7 +28,7 @@ object HarvestWindowAnalyzer {
         var bestRunAllIdeal = false
         var bestRunStart: ForecastItem? = null
         var bestRunEnd: ForecastItem? = null
-        var bestPopInWindow = 1.0
+        var maxPopInWindow = 0.0   // worst-case rain in the best window
 
         var currentRun = mutableListOf<ScoredSlot>()
         for (ss in scored) {
@@ -39,7 +39,7 @@ object HarvestWindowAnalyzer {
                     bestRunAllIdeal = currentRun.all { it.score == 2 }
                     bestRunStart = currentRun.first().slot
                     bestRunEnd = currentRun.last().slot
-                    bestPopInWindow = currentRun.minOf { it.slot.pop }
+                    maxPopInWindow = currentRun.maxOf { it.slot.pop }
                 }
             } else {
                 currentRun = mutableListOf()
@@ -55,7 +55,7 @@ object HarvestWindowAnalyzer {
         return Insight(
             category = "HARVEST_WINDOW",
             severity = severity,
-            formatArgs = listOf((bestPopInWindow * 100).toInt()),
+            formatArgs = listOf((maxPopInWindow * 100).toInt()),
             windowStart = bestRunStart?.dt,
             windowEnd = bestRunEnd?.dt,
             iconCode = bestRunStart?.weather?.firstOrNull()?.icon
