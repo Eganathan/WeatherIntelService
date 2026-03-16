@@ -2,6 +2,7 @@ package dev.eknath
 
 import dev.eknath.api.requireApiKey
 import dev.eknath.api.CurrentWeatherDto
+import dev.eknath.api.DailyForecastDto
 import dev.eknath.api.ErrorResponse
 import dev.eknath.api.InsightDto
 import dev.eknath.api.IntelligenceResponse
@@ -54,25 +55,33 @@ fun Application.configureRouting() {
                     ?.takeIf { it.isNotEmpty() }
 
                 val forecast = service.getForecast(lat, lon, forecastType)
-                val insights = service.runAnalyzers(forecast, forecastType, categories)
-                val overallSeverity = service.overallSeverity(insights)
+                val byDay = service.runAnalyzersByDay(forecast, forecastType, categories)
 
                 val generatedAt = System.currentTimeMillis() / 1000
                 val expiresAt = forecastCache.expiresAt(lat, lon, forecastType) ?: (generatedAt + forecastType.ttlSeconds)
 
-                val insightDtos = insights.map { insight ->
-                    val (title, description) = MessageBundle.resolve(insight, lang)
-                    InsightDto(
-                        category = insight.category,
-                        severity = insight.severity.name,
-                        title = title,
-                        description = description,
-                        formatArgs = insight.formatArgs.map { it.toString() },
-                        windowStart = insight.windowStart,
-                        windowEnd = insight.windowEnd,
-                        iconUrl = insight.iconCode?.let { iconUrl(it) }
+                val dailyDtos = byDay.map { (date, insights) ->
+                    val insightDtos = insights.map { insight ->
+                        val (title, description) = MessageBundle.resolve(insight, lang)
+                        InsightDto(
+                            category = insight.category,
+                            severity = insight.severity.name,
+                            title = title,
+                            description = description,
+                            formatArgs = insight.formatArgs.map { it.toString() },
+                            windowStart = insight.windowStart,
+                            windowEnd = insight.windowEnd,
+                            iconUrl = insight.iconCode?.let { iconUrl(it) }
+                        )
+                    }
+                    DailyForecastDto(
+                        date = date,
+                        overallSeverity = service.overallSeverity(insights).name,
+                        insights = insightDtos
                     )
                 }
+
+                val overallSeverity = service.overallSeverity(byDay.values.flatten())
 
                 call.respond(
                     IntelligenceResponse(
@@ -86,7 +95,7 @@ fun Application.configureRouting() {
                             city = forecast.city.name,
                             country = forecast.city.country
                         ),
-                        insights = insightDtos
+                        forecast = dailyDtos
                     )
                 )
             }

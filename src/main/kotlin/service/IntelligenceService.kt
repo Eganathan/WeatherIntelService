@@ -4,6 +4,7 @@ import dev.eknath.analyzers.*
 import dev.eknath.analyzers.models.Insight
 import dev.eknath.analyzers.models.Severity
 import dev.eknath.cache.ForecastCache
+import dev.eknath.owm.ForecastItem
 import dev.eknath.owm.ForecastResponse
 import dev.eknath.owm.ForecastType
 import dev.eknath.owm.OwmClient
@@ -19,13 +20,28 @@ class IntelligenceService(
             }
     }
 
-    fun runAnalyzers(
+    // Groups all forecast slots by calendar date (UTC) and runs analyzers per day.
+    // Returns a LinkedHashMap to preserve chronological day order.
+    fun runAnalyzersByDay(
         forecast: ForecastResponse,
+        forecastType: ForecastType,
+        categories: List<String>?
+    ): LinkedHashMap<String, List<Insight>> {
+        val result = LinkedHashMap<String, List<Insight>>()
+        forecast.list
+            .groupBy { it.dtTxt.take(10) }   // "YYYY-MM-DD"
+            .forEach { (date, slots) ->
+                result[date] = runAnalyzers(slots, forecastType, categories)
+            }
+        return result
+    }
+
+    fun runAnalyzers(
+        slots: List<ForecastItem>,
         forecastType: ForecastType,
         categories: List<String>?
     ): List<Insight> {
         val filter = categories?.map { it.uppercase() }?.toSet()
-        val slots = forecast.list
 
         val all = mapOf(
             "SPRAYING" to { SprayingAnalyzer.analyze(slots) },

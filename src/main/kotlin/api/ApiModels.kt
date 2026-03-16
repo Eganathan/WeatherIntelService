@@ -10,6 +10,13 @@ data class IntelligenceResponse(
     @SerialName("generated_at") val generatedAt: Long,
     @SerialName("expires_at") val expiresAt: Long,
     val location: LocationInfo,
+    val forecast: List<DailyForecastDto>
+)
+
+@Serializable
+data class DailyForecastDto(
+    val date: String,
+    @SerialName("overall_severity") val overallSeverity: String,
     val insights: List<InsightDto>
 )
 

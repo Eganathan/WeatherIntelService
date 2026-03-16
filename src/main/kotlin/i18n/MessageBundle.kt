@@ -5,7 +5,7 @@ import java.text.MessageFormat
 import java.util.Properties
 
 object MessageBundle {
-    private val supportedLangs = setOf("en", "hi", "gu", "kn", "mr", "ta")
+    private val supportedLangs = setOf("en", "hi", "gu", "kn", "mr", "ta", "te", "pa", "bn", "ml")
     private val bundles = mutableMapOf<String, Properties>()
 
     init {
